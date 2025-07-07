@@ -84,45 +84,66 @@ Follow the hashtag: #MuraliCodes to learn and grow together!
 ---
 
 ## 🗄️ Database Schema (MySQL)
+The full database schema is available in:
 
-### 📌 1. `teams` Table
+```bash
+team_matches.sql
 
-```sql
-CREATE TABLE teams (
-    team_id INTEGER NOT NULL AUTO_INCREMENT COMMENT 'PK: PK_TEAM_ID',
-    team_name VARCHAR(255) NOT NULL COMMENT 'TEAM NAME',
-    team_created DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP() COMMENT 'TEAM CREATED DATE',
-    team_modified DATETIME NULL COMMENT 'TEAM MODIFIED DATE',
-    team_status TINYINT NOT NULL DEFAULT 1 COMMENT '0-InActive,1-Active,2-Deleted',
-    CONSTRAINT PK_TEAM_ID PRIMARY KEY (team_id)
-) ENGINE=InnoDB COMMENT='TABLE TO STORE TEAM DETAILS';
+This script includes:
 
-📌 2. team_matches Table
-CREATE TABLE team_matches (
-    match_id INTEGER NOT NULL AUTO_INCREMENT COMMENT 'PK: PK_MATCH_ID',
-    match_team1_id INTEGER NOT NULL COMMENT 'FK: MATCH_TEAM1_ID → TEAMS(team_id)',
-    match_team2_id INTEGER NOT NULL COMMENT 'FK: MATCH_TEAM2_ID → TEAMS(team_id)',
-    match_team1_score INTEGER NOT NULL COMMENT 'TEAM1 SCORE',
-    match_team2_score INTEGER NOT NULL COMMENT 'TEAM2 SCORE',
-    match_played_ground VARCHAR(255) NOT NULL COMMENT 'MATCH PLAYED GROUND',
-    match_game_status VARCHAR(255) NOT NULL COMMENT 'GAME FINAL STATUS',
-    CONSTRAINT PK_MATCH_ID PRIMARY KEY (match_id),
-    CONSTRAINT FK_MATCH_TEAM1_ID FOREIGN KEY (match_team1_id) REFERENCES teams(team_id),
-    CONSTRAINT FK_MATCH_TEAM2_ID FOREIGN KEY (match_team2_id) REFERENCES teams(team_id)
-) ENGINE=InnoDB COMMENT='TABLE TO STORE MATCH DETAILS';
+teams table
 
-🔁 Sample Data
-INSERT INTO teams (team_id, team_name) VALUES
-(1, 'Hills Stay'),
-(2, 'Athelitic'),
-(3, 'Complete Game');
+organizations table
 
-UPDATE teams SET team_status = 1 WHERE team_id IN (1, 2, 3);
+team_matches with latest fields:
 
-INSERT INTO team_matches (match_id, match_team1_id, match_team2_id, match_team1_score, match_team2_score, match_played_ground, match_game_status) VALUES
-(1, 1, 2, 40, 60, 'Hills Stay - Athelitic Ground','Team2 Won'),
-(2, 2, 1, 60, 30, 'Athelitic - Hills Stay Ground','Team1 Won'),
-(3, 1, 2, 70, 80, 'Hills Stay - Athelitic Ground', 'Team2 Won'),
-(4, 2, 3, 70, 80, 'Athelitic - Complete Game Ground','Team2 Won'),
-(5, 2, 3, 70, 80, 'Athelitic - Complete Game Ground','Team2 Won');
+match_orgz_id
 
+match_played_date
+
+match_status
+
+viw_org_team_matches view for fast and user-oriented querying
+
+Sample insert data for testing
+
+
+✅ Add in 🚀 Features section:
+
+- 🏢 Organization-based team match tracking
+- 📆 Match play date support
+- 📊 View-based data API for better performance
+
+### ➤ Get Match Details by Team ID
+`GET /team/<team_id>/matches`
+
+Example:
+
+---
+
+✅ Replace or Extend 🔌 API Endpoint Section:
+### ➤ Get Matches by Organization + Team  
+Using a view (`viw_org_team_matches`) that simplifies team-vs-team match data with your/opponent details.
+
+`GET /org/<orgz_id>/team/<team_id>/matches`
+
+Example:
+GET /org/1/team/1/matches
+#### 🔁 Sample Response
+```json
+[
+  {
+    "match_id": 1,
+    "match_orgz_id": 1,
+    "organization_name": "Organization1",
+    "your_team_id": 1,
+    "your_team_name": "Hills Stay",
+    "opponent_team_id": 2,
+    "opponent_team_name": "Athelitic",
+    "your_team_score": 40,
+    "opponent_team_score": 60,
+    "match_played_date": "2025-07-10T00:00:00",
+    "match_played_ground": "Hills Stay - Athelitic Ground",
+    "match_game_status": "Team2 Won"
+  }
+]

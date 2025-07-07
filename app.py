@@ -35,5 +35,27 @@ def get_team_matches(team_id):
     except Exception as exception:
         return jsonify({'error': str(exception)}),500
     
+
+@app.route('/org/<int:orgz_id>/team/<int:team_id>/matches', methods=['GET'])
+def get_team_matches_from_view(orgz_id, team_id):
+    query = """
+        SELECT * 
+        FROM viw_org_team_matches
+        WHERE match_orgz_id = %s
+        AND your_team_id = %s
+        ORDER BY match_played_date;
+    """
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute(query, (orgz_id, team_id))
+        results = cursor.fetchall()
+        return jsonify(results)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
 if __name__ == '__main__':
     app.run(debug=True)
